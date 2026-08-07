@@ -1,0 +1,21 @@
+# Environment files
+.env
+**/.env
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Logs
+*.log
+
+# Build folders
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+.postman/
+postman/
