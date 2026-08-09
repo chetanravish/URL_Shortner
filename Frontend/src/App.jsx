@@ -1,11 +1,11 @@
-import React from 'react'
+import { useState } from "react";
+import Homepage from "./pages/Homepage";
 
-const App = () => {
+function App() {
+
   return (
-    <div>
-      <h1 className='bg-blue-500'>App</h1>
-    </div>
-  )
+  <Homepage />
+  );
 }
 
-export default App
+export default App;
