@@ -1,6 +1,5 @@
 import React from 'react'
 import { useState } from 'react'
-import axios from 'axios'
 import { createShortUrl } from '../api/Short_url_api.js'
 
 

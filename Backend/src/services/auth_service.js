@@ -1,16 +1,23 @@
-import { jsonwebtoken } from "jsonwebtoken";
+import jsonwebtoken from "jsonwebtoken";
 import User from "../models/user_model.js";
 import { createUser, findUserByEmail } from "../dao/user_dao.js";
 import { ConflictError } from "../utils/error_handler.js";
 import { signToken } from "../utils/helper.js";
 
+
 export const registerUser=async(name,email,password)=>{
-    console.log(email)
     const user = await findUserByEmail(email);
     if(user){
         throw new ConflictError("User already exists");
     }
-    const newUser = await createUser({name,email,password});
-    const token = await signToken({id:newUser._id});
+    const newUser = await createUser(name,email,password);
+    const token =  signToken({id:newUser._id});
     return token
+}
+
+export const loginUser=async(email,password)=>{
+   const user = await findUserByEmail(email)
+   if(!user || user.password !== password) throw new Error ("Invalid Credentials")
+    const token= signToken({id:user._id})
+    return {token,user}
 }

@@ -1,6 +1,7 @@
 import urlSchema from "../models/short.model.js";
 import { ConflictError } from "../utils/error_handler.js";
 export const saveShortUrl = async (shortUrl,fullUrl,userId) => {
+      // console.log(userId)
     try{
     const newUrl = new urlSchema({
         full_url: fullUrl,
@@ -19,4 +20,9 @@ export const saveShortUrl = async (shortUrl,fullUrl,userId) => {
 
 export const getShortUrl=async(shortUrl)=>{
     return await urlSchema.findOneAndUpdate({short_url:shortUrl},{$inc:{clicks:1}})
+}
+
+
+export const getCustomUrl = async(slug)=>{
+  return await urlSchema.findOne({short_url:slug})
 }
