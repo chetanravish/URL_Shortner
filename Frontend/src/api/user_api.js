@@ -14,3 +14,8 @@ import axiosInstance from "../utils/axios_instance"
     const { data } = await axiosInstance.post("/api/auth/register", { name,email,password });
     return data;
  }
+
+ export const getCurrentUser = async ()=>{
+   const{data} = await axiosInstance.get('/api/auth/me')
+   return data
+ }

@@ -1,6 +1,6 @@
 import jsonwebtoken from "jsonwebtoken";
 import User from "../models/user_model.js";
-import { createUser, findUserByEmail } from "../dao/user_dao.js";
+import { createUser, findUserByEmail, findUserByEmailByPassword } from "../dao/user_dao.js";
 import { ConflictError } from "../utils/error_handler.js";
 import { signToken } from "../utils/helper.js";
 
@@ -12,11 +12,11 @@ export const registerUser=async(name,email,password)=>{
     }
     const newUser = await createUser(name,email,password);
     const token =  signToken({id:newUser._id});
-    return token
+    return {token,user}
 }
 
 export const loginUser=async(email,password)=>{
-   const user = await findUserByEmail(email)
+   const user = await findUserByEmailByPassword(email)
    if(!user || user.password !== password) throw new Error ("Invalid Credentials")
     const token= signToken({id:user._id})
     return {token,user}

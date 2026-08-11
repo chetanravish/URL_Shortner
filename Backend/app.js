@@ -12,8 +12,11 @@ import cookieParser from "cookie-parser";
 import { attachUSer } from "./src/utils/attach_user.js";
 const app=express();
 dotenv.config("./.env");
-
-app.use(cors());
+app.use(cors(
+  {origin:'http://localhost:5173',
+    credentials:true
+  }
+));
 app.use(express.json()) 
 app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())

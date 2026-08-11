@@ -1,5 +1,5 @@
-import { findUserByEmail } from "../dao/user_dao"
-import { verifyToken } from "../utils/helper"
+import {findUserById } from "../dao/user_dao.js"
+import { verifyToken } from "../utils/helper.js"
 
 export const authMiddleware=async(req,res,next)=>{ 
     const token=req.cookies.accessToken
@@ -7,7 +7,7 @@ export const authMiddleware=async(req,res,next)=>{
 
         try{
         const decoded=verifyToken(token)
-        const user= await findUserByEmail(decoded)
+        const user= await findUserById(decoded)
         if(!user) return res.status(401).json({message:"Unauthrized"})
             req.user=user
             next()

@@ -1,15 +1,20 @@
-import { useState } from "react";
-import Homepage from "./pages/Homepage";
-import LoginForm from"./components/LoginForm"
-import AuthPage from "./pages/Auth_page";
+import React from 'react';
+import { Outlet } from '@tanstack/react-router';
+import Navbar from './components/Navbar';
 
-function App() {
+
+const App=()=> {
 
   return (
-  <AuthPage />
+    <>
+    <Navbar/>
+  <Outlet />
+  </>
+  
   );
 }
 
 export default App;
 
 
+ 
