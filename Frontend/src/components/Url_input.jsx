@@ -1,20 +1,36 @@
 import React from 'react'
 import { useState } from 'react'
 import { createShortUrl } from '../api/Short_url_api.js'
+import { useSelector } from 'react-redux'
+import { useQueryClient } from "@tanstack/react-query";
+import { getAllUserUrls } from '../api/user_api.js';
 
 
 const Url_input = () => {
 
     const [url, setUrl] = useState("")
     const [shortUrl, setShortUrl] = useState("")
+    const [customSlug,setCustomSlug]=useState("")
+    const [error, setError] = useState("");
+    const {isAuthenticated} = useSelector((state)=> state.auth)
+    const queryClient = useQueryClient();
+
+    
 
     const handleSubmit = async () => {
         if (!url.trim()) {
             alert("Please enter a URL");
             return;
         }
-        const shortUrl = await createShortUrl(url);
+        try{
+        const shortUrl = await createShortUrl(url,customSlug);
         setShortUrl(shortUrl)
+        queryClient.invalidateQueries({ queryKey: ["userUrls"]});
+        setError("")
+    } catch(err){
+        setError(err.message)
+    }
+
     }
 
     return (
@@ -35,17 +51,24 @@ const Url_input = () => {
                 > Shorten
                 </button>
 
-                {/* Error */}
-                {/* {error && (
-          <p className="text-red-500 text-sm mt-3">
-            {error}
-          </p>
-        )} */}
-
-
-
             </div>
-            {/* Result */}
+
+            {isAuthenticated &&(
+                <div className='mt-4'>
+                    <label htmlFor="customSlug" className='block text-sm font-medium text-gray-700 mb-1'>
+                        Custom URL  (Optional)
+                    </label>
+                    <input
+                    type='text'
+                    id='customSlug'
+                    value={customSlug}
+                    onChange={(event) => setCustomSlug(event.target.value)}
+                    placeholder='Enter Custom Slug'
+                    className='w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+                    />
+                </div>
+            )}
+
             {shortUrl && (
                 <div className="mt-6">
 

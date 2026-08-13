@@ -8,6 +8,7 @@ import { redirectFromShortUrl } from "./src/controller/short_url_controller.js";
 import { errorHandler } from "./src/utils/error_handler.js";
 import cors from "cors";
 import routeAauth from "./src/routes/route_auth.js";
+import routeUser from './src/routes/user_route.js'
 import cookieParser from "cookie-parser";
 import { attachUSer } from "./src/utils/attach_user.js";
 const app=express();
@@ -21,6 +22,8 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())
 app.use(attachUSer)
+
+app.use('/api/user',routeUser)
 app.use('/api/auth',routeAauth)
 app.use('/api/create',short_url)
 app.get("/:id",redirectFromShortUrl)
