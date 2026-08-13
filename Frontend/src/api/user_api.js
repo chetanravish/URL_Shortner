@@ -6,7 +6,7 @@ import axiosInstance from "../utils/axios_instance"
  }
 
   export const logOutUser = async () => {
-    const { data } = await axiosInstance.get("/api/auth/logout");
+    const { data } = await axiosInstance.post("/api/auth/logout");
     return data;
  }
 
@@ -20,7 +20,18 @@ import axiosInstance from "../utils/axios_instance"
    return data
  }
 
+
  export const getAllUserUrls = async ()=>{
-  const {data} = await axiosInstance.post("/api/user/urls ")
+  const {data} = await axiosInstance.get("/api/user/urls")
   return data
  }
+
+export const deleteUserUrl = async (id) => {
+    const { data } = await axiosInstance.delete(
+        `/api/user/urls/${id}`
+    );
+
+    return data;
+};
+
+
