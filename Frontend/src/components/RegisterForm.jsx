@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { registerUser } from "../api/user_api";
 import { login } from "../store/slice/authSlice";
 import { useNavigate } from "@tanstack/react-router";
@@ -7,6 +8,7 @@ const Register = ({state}) => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const dispatch = useDispatch();
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
