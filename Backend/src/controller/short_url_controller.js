@@ -7,7 +7,6 @@ import wrapAsync from "../utils/tryCatchWrapper.js";
 
 export const createShortUrl = wrapAsync(async(req,res)=>{ 
     const {url,slug}=req.body
-    console.log({url,slug})
     let shortUrl
     if(req.user){
          shortUrl= await createShortUrlWithUser(url,req.user._id,slug)
@@ -15,7 +14,7 @@ export const createShortUrl = wrapAsync(async(req,res)=>{
          shortUrl =await createShortUrlWithoutUser(url)
     }   
      
-    res.status(200).json({shortUrl : process.env.APP_URL+shortUrl})
+    res.status(200).json({shortUrl :`${process.env.APP_URL}/${shortUrl}`})
 
 });
 
@@ -25,7 +24,7 @@ export const redirectFromShortUrl = wrapAsync(async (req, res) => {
     if (!url) throw new Error("Short URL not found");
     res.redirect(url.full_url);
 
-}); 
+});     
 
 export const createCustomUrl=wrapAsync(async(req,res)=>{
     const{url,slug}=req.body

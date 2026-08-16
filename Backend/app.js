@@ -14,7 +14,7 @@ import { attachUSer } from "./src/utils/attach_user.js";
 const app=express();
 dotenv.config("./.env");
 app.use(cors(
-  {origin:'http://localhost:5173',
+  {origin:'http://localhost:3000',
     credentials:true
   }
 ));
@@ -30,7 +30,9 @@ app.get("/:id",redirectFromShortUrl)
 
 app.use(errorHandler)
 
-app.listen(5000,()=>{
-  connectDB()
-    console.log("Server started on port https://localhost:");
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, "0.0.0.0", () => {
+    connectDB();
+    console.log(`Server started on port ${PORT}`);
 });
+
