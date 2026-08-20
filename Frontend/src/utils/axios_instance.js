@@ -1,7 +1,7 @@
 // Instance for axios so we don't have to write the base url every time we make a request
 import axios from "axios";
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:5000",
+    baseURL: import.meta.env.VITE_API_URL,
     timeout: 10000,
     withCredentials:true
 })
@@ -11,6 +11,7 @@ axiosInstance.interceptors.request.use(
         return response;
     },
     (error) => {
+
         if (error.response) {
             const { status, data } = error.response;
 

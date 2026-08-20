@@ -1,5 +1,6 @@
+import dns from 'node:dns';
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 import express from "express";
-import { nanoid } from "nanoid";
 import dotenv from "dotenv";  
 import connectDB from "./src/config/mongo.config.js";
 import urlSchema from "./src/models/short.model.js";
@@ -13,15 +14,21 @@ import cookieParser from "cookie-parser";
 import { attachUSer } from "./src/utils/attach_user.js";
 const app=express();
 dotenv.config("./.env");
-app.use(cors(
-  {origin:'http://localhost:3000',
-    credentials:true
-  }
-));
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "http://url-shortener-alb-1306131148.ap-northeast-1.elb.amazonaws.com"
+  ],
+  credentials: true,
+}));
 app.use(express.json()) 
 app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())
 app.use(attachUSer)
+
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "URL Shortener API Running" });
+});
 
 app.use('/api/user',routeUser)
 app.use('/api/auth',routeAauth)

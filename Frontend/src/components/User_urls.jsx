@@ -211,9 +211,8 @@ const handleDelete = async (id) => {
 
             {[...userUrls].reverse().map((url) => {
 
-              const shortLink =
-                `http://localhost:3000/${url.short_url}`;
-
+              const BASE_URL = import.meta.env.VITE_API_URL;
+              const shortLink = `${import.meta.env.VITE_API_URL}/${url.short_url}`;
               const isDeleting =
                 deletingId === url._id;
 
@@ -245,7 +244,7 @@ const handleDelete = async (id) => {
                       rel="noopener noreferrer"
                       className="text-sm text-blue-600 hover:text-blue-800 hover:underline whitespace-nowrap"
                     >
-                      localhost:3000/{url.short_url}
+                      {shortLink}
                     </a>
 
                   </td>
