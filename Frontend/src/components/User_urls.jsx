@@ -22,20 +22,35 @@ const User_urls = () => {
   const [deletingId, setDeletingId] = useState(null);
 
   const handleCopy = async (url, id) => {
-    try {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      // HTTPS or localhost
       await navigator.clipboard.writeText(url);
+    } else {
+      // HTTP fallback for ALB
+      const textArea = document.createElement("textarea");
+      textArea.value = url;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
 
-      setCopiedId(id);
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
 
-      setTimeout(() => {
-        setCopiedId(null);
-      }, 2000);
-
-    } catch (err) {
-      console.error("Copy failed:", err);
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
     }
-  };
 
+    setCopiedId(id);
+
+    setTimeout(() => {
+      setCopiedId(null);
+    }, 2000);
+
+  } catch (err) {
+    console.error("Copy failed:", err);
+  }
+};
 const handleDelete = async (id) => {
 
     const confirmed = window.confirm(
@@ -74,7 +89,6 @@ const handleDelete = async (id) => {
   }
 
 
-  /* ---------------- Error ---------------- */
 
   if (isError) {
     return (

@@ -49,21 +49,37 @@ const Url_input = () => {
       setIsSubmitting(false);
     }
   };
-
-  const handleCopy = async () => {
-    try {
+const handleCopy = async () => {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      // HTTPS or localhost
       await navigator.clipboard.writeText(shortUrl);
+    } else {
+      // HTTP fallback (works on your ALB)
+      const textArea = document.createElement("textarea");
+      textArea.value = shortUrl;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
 
-      setCopied(true);
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
 
-      setTimeout(() => {
-        setCopied(false);
-      }, 2000);
-
-    } catch (err) {
-      setError("Unable to copy the URL.");
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
     }
-  };
+
+    setCopied(true);
+
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+
+  } catch (err) {
+    setError("Unable to copy the URL.");
+    console.error(err);
+  }
+};
 
   return (
     <div>
