@@ -1,0 +1,70 @@
+name: Deploy URL Shortener to AWS ECS
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: ap-northeast-1
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # For Frontend Image
+      - name: Build Frontend Docker Image
+        run: |
+          docker build -t url-shortener-frontend ./Frontend
+
+      - name: Tag Frontend Image
+        run: |
+          docker tag url-shortener-frontend:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/url-shortener-frontend:latest
+
+      - name: Push Frontend Image
+        run: |
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/url-shortener-frontend:latest
+
+      #  For Backend Image
+      - name: Build Backend Docker Image
+        run: |
+          docker build -t url-shortener-backend ./Backend
+
+      - name: Tag Backend Image
+        run: |
+          docker tag url-shortener-backend:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/url-shortener-backend:latest
+
+      - name: Push Backend Image
+        run: |
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/url-shortener-backend:latest
+
+      # ---------- ECS Deploy ----------
+      - name: Deploy Frontend Service
+        run: |
+          aws ecs update-service \
+            --cluster url-shortener-cluster \
+            --service frontend-service \
+            --force-new-deployment
+
+      - name: Deploy Backend Service
+        run: |
+          aws ecs update-service \
+            --cluster url-shortener-cluster \
+            --service backend-service \
+            --force-new-deployment
