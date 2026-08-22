@@ -14,9 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout code
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # AWS Login
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -24,50 +26,56 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      # Login to ECR
       - name: Login to Amazon ECR
-        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      # Setup Node
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-        node-version: "20"
+          node-version: "20"
 
+      # Install & Build Frontend
       - name: Install Frontend Dependencies
         working-directory: ./Frontend
-        run: npm ci
+        run: npm install
 
       - name: Build React App
         working-directory: ./Frontend
         run: npm run build
 
-      # For Frontend Image
+      # Build Frontend Docker Image
       - name: Build Frontend Docker Image
-        run: |
-          docker build -t url-shortener-frontend ./Frontend
+        working-directory: ./Frontend
+        run: docker build -t url-shortener-frontend .
 
       - name: Tag Frontend Image
         run: |
-          docker tag url-shortener-frontend:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/url-shortener-frontend:latest
+          docker tag url-shortener-frontend:latest \
+          $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/url-shortener-frontend:latest
 
       - name: Push Frontend Image
         run: |
-          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/url-shortener-frontend:latest
+          docker push \
+          $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/url-shortener-frontend:latest
 
-      #  For Backend Image
+      # Build Backend Docker Image
       - name: Build Backend Docker Image
-        run: |
-          docker build -t url-shortener-backend ./Backend
+        working-directory: ./Backend
+        run: docker build -t url-shortener-backend .
 
       - name: Tag Backend Image
         run: |
-          docker tag url-shortener-backend:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/url-shortener-backend:latest
+          docker tag url-shortener-backend:latest \
+          $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/url-shortener-backend:latest
 
       - name: Push Backend Image
         run: |
-          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/url-shortener-backend:latest
+          docker push \
+          $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/url-shortener-backend:latest
 
-      # ---------- ECS Deploy ----------
+      # Deploy Frontend
       - name: Deploy Frontend Service
         run: |
           aws ecs update-service \
@@ -75,6 +83,7 @@ jobs:
             --service frontend-service \
             --force-new-deployment
 
+      # Deploy Backend
       - name: Deploy Backend Service
         run: |
           aws ecs update-service \
